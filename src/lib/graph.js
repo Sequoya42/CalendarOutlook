@@ -33,7 +33,7 @@ export async function getEvents() {
 
   return await graphClient
     .api('/me/calendarView').query(query)
-    .select('subject,start,end')
+    .select('subject,start,end, attendees')
     .orderby(`start/DateTime`)
     .top(100)
     .get();

@@ -10,21 +10,54 @@
     tax: 0,
     afterTax: 0,
   };
+  let byDays = {};
 
+  function addGroup(
+    byDay: any,
+    day: string,
+    subject: string,
+    timeSpent: number,
+    isMeeting: boolean
+  ) {
+    if (byDay[day]) {
+      byDay[day].subject.push({ subject, isMeeting });
+      byDay[day].timeSpent += +timeSpent;
+    } else {
+      byDay[day] = {
+        subject: [{ subject, isMeeting }],
+        timeSpent,
+      };
+    }
+    byDay[day]["isMeeting"] = isMeeting;
+    return byDay;
+  }
   //TODO agregate by days (forEach, and object with [Day])
   function aggregateEvents(values: object[], allTimeSpent: number) {
+    console.log({ values });
+    let byDay = {};
     let data = values.map((event: any) => {
       let start = new Date(event.start.dateTime);
       let end = new Date(event.end.dateTime);
+      let day = start.toISOString().split("T")[0];
+      let isMeeting = event.attendees.length > 0;
+      let attended = true;
+      if (isMeeting) {
+        let presence = event.attendees.find(
+          (a: any) => a.emailAddress.address == msalAccount
+        ).status.response;
+        if (presence !== "accepted") attended = false;
+      }
       let timeSpent = (+end - +start) / 3600000;
       allTimeSpent += timeSpent;
       let text = `${
         event.subject
       } - From  ${start.toLocaleString()} to ${end.toLocaleString()}
       For a total of ${timeSpent} hours`;
+      if (!isMeeting || (isMeeting && attended))
+        addGroup(byDay, day, event.subject, timeSpent, isMeeting);
       return text;
     });
-    return { data, allTimeSpent };
+    return { data, allTimeSpent, byDay };
   }
 
   async function login() {
@@ -37,8 +70,9 @@
     }
 
     let events = await getEvents();
-    let { data, allTimeSpent } = aggregateEvents(events.value, 0);
-
+    let { data, allTimeSpent, byDay } = aggregateEvents(events.value, 0);
+    console.log({ byDay });
+    byDays = byDay;
     let moula = allTimeSpent * 75;
     let tax = (moula * 20) / 100;
     let afterTax = moula - tax;
@@ -48,30 +82,81 @@
 </script>
 
 <h1>Welcome to Calendar</h1>
-<p>
+<div class="container" style="font-size: large">
   {#await test}
     Fetching data...
   {:then test}
-    {#each test as event}
-      <pre>
-      {event}
-    </pre>
-    {/each}
-    <div style="font-size: x-large">
-      Total time : <span>{calcMoula.allTimeSpent}</span>
-      Earned: <span>{calcMoula.afterTax}</span>
-      Total moula: <span>{calcMoula.moula}</span> including
-      <span>{calcMoula.tax}</span> tax
+    <div style="font-size: x-large; margin-bottom: 2vh">
+      Earned: <span>{calcMoula.afterTax} euros</span>
+      Total time :
+      <span style="margin-right: 2vw">{calcMoula.allTimeSpent}h</span>
+      Brut: <span>{calcMoula.moula}</span>
+      Tax: <span>{calcMoula.tax}</span> tax
+    </div>
+    <div class="gridCal">
+      {#each Object.entries(byDays) as [day, { timeSpent, subject }]}
+        <div class="calCell">
+          <div style="height: 2.5vh">
+            <b>{day} : {timeSpent}h </b>
+          </div>
+          <hr />
+          <div>
+            <!-- {subject} -->
+
+            {#each subject as sub, i}
+              <div
+                class:isMeeting={sub.isMeeting}
+                class="subject"
+                style="background-color: {i % 2 ? 'lightgray' : ''}"
+              >
+                {sub.subject}
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/each}
     </div>
   {:catch _someError}
     <button id="signin" on:click={() => (test = login())}>
       Login MicroBloat
     </button>
   {/await}
-</p>
+</div>
 
 <style>
   span {
     color: green;
+  }
+
+  .container {
+    font-size: large;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .gridCal {
+    max-width: 60vw;
+    margin-top: 1vh;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-row-gap: 2vh;
+  }
+
+  .calCell {
+    margin: 2px;
+    border: 1px solid grey;
+  }
+
+  .isMeeting {
+    color: red;
+    font-weight: bolder;
+  }
+
+  .subject {
+    margin: 1vh 0.5vw;
   }
 </style>
