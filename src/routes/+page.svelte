@@ -69,10 +69,18 @@
       await signIn();
     }
 
+    type ByDay = {
+      timeSpent: number;
+      subject: string[];
+      isMeeting: boolean;
+    };
+
+    type ByDays = Record<string, ByDay>;
+
     let events = await getEvents();
     let { data, allTimeSpent, byDay } = aggregateEvents(events.value, 0);
     console.log({ byDay });
-    byDays = byDay;
+    byDays = byDay as ByDays;
     let moula = allTimeSpent * 75;
     let tax = (moula * 20) / 100;
     let afterTax = moula - tax;
@@ -81,38 +89,38 @@
   }
 </script>
 
-<h1>Welcome to Calendar</h1>
+<h1>Bloatamax calendar ™</h1>
 <div class="container" style="font-size: large">
   {#await test}
     Fetching data...
   {:then test}
     <div style="font-size: x-large; margin-bottom: 2vh">
-      Earned: <span>{calcMoula.afterTax} euros</span>
+      Brut: <span>{calcMoula.moula} Є</span>
       Total time :
       <span style="margin-right: 2vw">{calcMoula.allTimeSpent}h</span>
-      Brut: <span>{calcMoula.moula}</span>
-      Tax: <span>{calcMoula.tax}</span> tax
+      Tax (20%): <span>{calcMoula.tax} Є</span>
+      Net: <span>{calcMoula.afterTax} Є</span>
     </div>
     <div class="gridCal">
       {#each Object.entries(byDays) as [day, { timeSpent, subject }]}
-        <div class="calCell">
-          <div style="height: 2.5vh">
-            <b>{day} : {timeSpent}h </b>
-          </div>
-          <hr />
-          <div>
-            <!-- {subject} -->
+        <div style="flex; justify-content: center;align-items: center;">
+          <b>{day}</b>
+        </div>
+        <div>
+          {timeSpent}h
+        </div>
 
-            {#each subject as sub, i}
-              <div
-                class:isMeeting={sub.isMeeting}
-                class="subject"
-                style="background-color: {i % 2 ? 'lightgray' : ''}"
-              >
-                {sub.subject}
-              </div>
-            {/each}
-          </div>
+        <!-- {subject} -->
+        <div class="calCell">
+          {#each subject as sub, i}
+            <div
+              class:isMeeting={sub.isMeeting}
+              class="subject"
+              style="background-color: {i % 2 ? '#d3d3d342' : ''}"
+            >
+              {sub.subject}
+            </div>
+          {/each}
         </div>
       {/each}
     </div>
@@ -126,6 +134,7 @@
 <style>
   span {
     color: green;
+    padding-right: 1vw;
   }
 
   .container {
@@ -141,19 +150,19 @@
     max-width: 60vw;
     margin-top: 1vh;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr 5fr;
     grid-row-gap: 2vh;
   }
 
   .calCell {
     margin: 2px;
-    border: 1px solid grey;
+    font-weight: bolder;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   }
 
   .isMeeting {
-    color: red;
-    font-weight: bolder;
+    color: #3f51b5;
+    /* font-weight: bolder; */
   }
 
   .subject {
