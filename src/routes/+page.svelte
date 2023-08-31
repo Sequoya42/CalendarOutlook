@@ -4,6 +4,7 @@
   import TimeSheet from "$lib/time-sheet.svelte";
 
   let test = login();
+  let hideRest = false;
   let msalAccount: any = null;
   let calcMoula = {
     allTimeSpent: 0,
@@ -22,22 +23,13 @@
       await signIn();
     }
 
-    type ByDay = {
-      timeSpent: number;
-      subject: string[];
-      isMeeting: boolean;
-    };
-
-    type ByDays = Record<string, ByDay>;
-
     let events = await getEvents();
     let { data, allTimeSpent, byDay } = aggregateEvents(
       events.value,
       0,
       msalAccount
     );
-    console.log({ byDay });
-    byDays = byDay as ByDays;
+    byDays = byDay;
     let moula = allTimeSpent * 75;
     let tax = (moula * 20) / 100;
     let afterTax = moula - tax;
@@ -46,18 +38,24 @@
   }
 </script>
 
-<h1>Bloatamax calendar ™</h1>
-<div class="container" style="font-size: large">
+<div style="display:{hideRest ? 'none' : ''}">
+  <button on:click={() => (hideRest = true)}>View as timeSheet</button>
+  <h1>Bloatamax calendar ™</h1>
+</div>
+
+<div style="margin-left: 15vw">
   {#await test}
     Fetching data...
   {:then test}
-    <div style="font-size: x-large; margin-bottom: 2vh">
-      Brut: <span>{calcMoula.moula} Є</span>
-      Total time :
-      <span style="margin-right: 2vw">{calcMoula.allTimeSpent}h</span>
-      Tax (20%): <span>{calcMoula.tax} Є</span>
-      Net: <span>{calcMoula.afterTax} Є</span>
-    </div>
+    {#if !hideRest}
+      <div style="container; font-size: x-large; margin-bottom: 2vh">
+        Brut: <span>{calcMoula.moula} Є</span>
+        Total time :
+        <span style="margin-right: 2vw">{calcMoula.allTimeSpent}h</span>
+        Tax (20%): <span>{calcMoula.tax} Є</span>
+        Net: <span>{calcMoula.afterTax} Є</span>
+      </div>
+    {/if}
     <TimeSheet {byDays} />
   {:catch _someError}
     <button id="signin" on:click={() => (test = login())}>
@@ -79,28 +77,5 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
-
-  .gridCal {
-    max-width: 60vw;
-    margin-top: 1vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr 5fr;
-    grid-row-gap: 2vh;
-  }
-
-  .calCell {
-    margin: 2px;
-    font-weight: bolder;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  }
-
-  .isMeeting {
-    color: #3f51b5;
-    /* font-weight: bolder; */
-  }
-
-  .subject {
-    margin: 1vh 0.5vw;
   }
 </style>

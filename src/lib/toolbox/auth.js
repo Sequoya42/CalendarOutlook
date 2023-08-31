@@ -24,7 +24,9 @@ await msalClient.initialize();
 // Log the user in
 export async function signIn() {
   const authResult = await msalClient.loginPopup(msalRequest);
+  console.log({ authResult })
   sessionStorage.setItem('msalAccount', authResult.account.username);
+  sessionStorage.setItem('msalName', authResult.account.name);
 }
 //Get token from Graph
 export async function getToken() {
