@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { signIn } from "$lib/auth.js";
-  import { getEvents } from "$lib/graph.js";
+  import { signIn } from "$lib/toolbox/auth.js";
+  import { aggregateEvents, getEvents } from "$lib/toolbox/graph.js";
+  import TimeSheet from "$lib/time-sheet.svelte";
 
   let test = login();
   let msalAccount: any = null;
@@ -11,54 +12,6 @@
     afterTax: 0,
   };
   let byDays = {};
-
-  function addGroup(
-    byDay: any,
-    day: string,
-    subject: string,
-    timeSpent: number,
-    isMeeting: boolean
-  ) {
-    if (byDay[day]) {
-      byDay[day].subject.push({ subject, isMeeting });
-      byDay[day].timeSpent += +timeSpent;
-    } else {
-      byDay[day] = {
-        subject: [{ subject, isMeeting }],
-        timeSpent,
-      };
-    }
-    byDay[day]["isMeeting"] = isMeeting;
-    return byDay;
-  }
-  //TODO agregate by days (forEach, and object with [Day])
-  function aggregateEvents(values: object[], allTimeSpent: number) {
-    console.log({ values });
-    let byDay = {};
-    let data = values.map((event: any) => {
-      let start = new Date(event.start.dateTime);
-      let end = new Date(event.end.dateTime);
-      let day = start.toISOString().split("T")[0];
-      let isMeeting = event.attendees.length > 0;
-      let attended = true;
-      if (isMeeting) {
-        let presence = event.attendees.find(
-          (a: any) => a.emailAddress.address == msalAccount
-        ).status.response;
-        if (presence !== "accepted") attended = false;
-      }
-      let timeSpent = (+end - +start) / 3600000;
-      allTimeSpent += timeSpent;
-      let text = `${
-        event.subject
-      } - From  ${start.toLocaleString()} to ${end.toLocaleString()}
-      For a total of ${timeSpent} hours`;
-      if (!isMeeting || (isMeeting && attended))
-        addGroup(byDay, day, event.subject, timeSpent, isMeeting);
-      return text;
-    });
-    return { data, allTimeSpent, byDay };
-  }
 
   async function login() {
     msalAccount = await sessionStorage.getItem("msalAccount");
@@ -78,7 +31,11 @@
     type ByDays = Record<string, ByDay>;
 
     let events = await getEvents();
-    let { data, allTimeSpent, byDay } = aggregateEvents(events.value, 0);
+    let { data, allTimeSpent, byDay } = aggregateEvents(
+      events.value,
+      0,
+      msalAccount
+    );
     console.log({ byDay });
     byDays = byDay as ByDays;
     let moula = allTimeSpent * 75;
@@ -101,29 +58,7 @@
       Tax (20%): <span>{calcMoula.tax} Є</span>
       Net: <span>{calcMoula.afterTax} Є</span>
     </div>
-    <div class="gridCal">
-      {#each Object.entries(byDays) as [day, { timeSpent, subject }]}
-        <div style="flex; justify-content: center;align-items: center;">
-          <b>{day}</b>
-        </div>
-        <div>
-          {timeSpent}h
-        </div>
-
-        <!-- {subject} -->
-        <div class="calCell">
-          {#each subject as sub, i}
-            <div
-              class:isMeeting={sub.isMeeting}
-              class="subject"
-              style="background-color: {i % 2 ? '#d3d3d342' : ''}"
-            >
-              {sub.subject}
-            </div>
-          {/each}
-        </div>
-      {/each}
-    </div>
+    <TimeSheet {byDays} />
   {:catch _someError}
     <button id="signin" on:click={() => (test = login())}>
       Login MicroBloat
