@@ -19,10 +19,11 @@ export async function getUser() {
     .get();
 }
 
-export async function getEvents() {
+export async function getEvents(num: number) {
   ensureScope('Calendars.read');
+  console.log({ num })
   const today = new Date();
-  const currentMonth = today.getMonth();
+  const currentMonth = today.getMonth() - num;
   const firstDayOfMonth = new Date(today.getFullYear(), currentMonth, 1);
 
   // Get the number of days in the current month

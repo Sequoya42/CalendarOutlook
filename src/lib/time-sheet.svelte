@@ -12,21 +12,29 @@
   export let byDays: ByDays;
 
   let msalName = sessionStorage.getItem("msalName");
-  let currentMonth = new Date(Object.keys(byDays)[0]).toLocaleString(
-    "default",
-    { month: "long" }
-  );
-
-  let totalTime = Object.values(byDays).reduce((a, d) => (a += d.timeSpent), 0);
-  let totalDays = Math.ceil(totalTime / 8);
+  let currentMonth: string;
+  let totalTime: number;
+  let totalDays: string;
+  $: currentMonth = new Date(Object.keys(byDays)[0]).toLocaleString("default", {
+    month: "long",
+  });
+  console.log("in time sheet", byDays);
+  $: totalTime = Object.values(byDays).reduce((a, d) => (a += d.timeSpent), 0);
+  $: totalDays = (totalTime / 8).toFixed(2);
   function transform(sub: any) {
-    return sub.map((e: Subject) => e.subject).join(" and ");
+    return sub
+      .map((e: Subject) => {
+        if (e.isMeeting) return `[${e.subject}]`;
+        return e.subject;
+      })
+      .join(" and ");
   }
 </script>
 
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
   <h2>Timesheet of {msalName} for the month of {currentMonth}</h2>
+  <span>Meetings are between []</span>
   <div class="gridCal">
     <div class="header">Day</div>
     <div class="header">Time</div>

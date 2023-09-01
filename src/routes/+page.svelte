@@ -4,6 +4,7 @@
   import TimeSheet from "$lib/time-sheet.svelte";
 
   let test = login();
+  let pastMonth = 1;
   let hideRest = false;
   let msalAccount: any = null;
   let calcMoula = {
@@ -14,16 +15,8 @@
   };
   let byDays = {};
 
-  async function login() {
-    msalAccount = await sessionStorage.getItem("msalAccount");
-    console.log("Login called", msalAccount);
-    if (msalAccount) {
-      console.log("GOT ACCOUNT", msalAccount);
-    } else {
-      await signIn();
-    }
-
-    let events = await getEvents();
+  async function fetchMonthly(num = 0) {
+    let events = await getEvents(num);
     let { data, allTimeSpent, byDay } = aggregateEvents(
       events.value,
       0,
@@ -34,13 +27,38 @@
     let tax = (moula * 20) / 100;
     let afterTax = moula - tax;
     calcMoula = { allTimeSpent, moula, tax, afterTax };
+    console.log({ calcMoula });
     return data;
+  }
+  async function login() {
+    msalAccount = await sessionStorage.getItem("msalAccount");
+    console.log("Login called", msalAccount);
+    if (msalAccount) {
+      console.log("GOT ACCOUNT", msalAccount);
+    } else {
+      await signIn();
+    }
+    return await fetchMonthly(0);
+    // let events = await getEvents();
+    // let { data, allTimeSpent, byDay } = aggregateEvents(
+    //   events.value,
+    //   0,
+    //   msalAccount
+    // );
+    // byDays = byDay;
+    // let moula = allTimeSpent * 75;
+    // let tax = (moula * 20) / 100;
+    // let afterTax = moula - tax;
+    // calcMoula = { allTimeSpent, moula, tax, afterTax };
+    // return data;
   }
 </script>
 
 <div style="display:{hideRest ? 'none' : ''}">
   <button on:click={() => (hideRest = true)}>View as timeSheet</button>
   <h1>Bloatamax calendar ™</h1>
+  <input type="number" min="1" bind:value={pastMonth} />
+  <button on:click={() => fetchMonthly(pastMonth)}>Fetch past months</button>
 </div>
 
 <div style="margin-left: 15vw">
