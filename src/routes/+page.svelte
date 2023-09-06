@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { signIn } from "$lib/toolbox/auth.js";
-  import { aggregateEvents, getEvents } from "$lib/toolbox/graph.js";
-  import TimeSheet from "$lib/time-sheet.svelte";
+  import { signIn } from "$lib/auth.js";
+  import { aggregateEvents, getEvents } from "$lib/graph.js";
+  import TimeSheet from "$components/time-sheet.svelte";
 
   let test = login();
   let pastMonth = 1;
   let hideRest = false;
+  let showInvoice = false;
   let msalAccount: any = null;
   let calcMoula = {
     allTimeSpent: 0,
@@ -39,23 +40,14 @@
       await signIn();
     }
     return await fetchMonthly(0);
-    // let events = await getEvents();
-    // let { data, allTimeSpent, byDay } = aggregateEvents(
-    //   events.value,
-    //   0,
-    //   msalAccount
-    // );
-    // byDays = byDay;
-    // let moula = allTimeSpent * 75;
-    // let tax = (moula * 20) / 100;
-    // let afterTax = moula - tax;
-    // calcMoula = { allTimeSpent, moula, tax, afterTax };
-    // return data;
   }
 </script>
 
 <div style="display:{hideRest ? 'none' : ''}">
   <button on:click={() => (hideRest = true)}>View as timeSheet</button>
+  <button on:click={() => (hideRest = true) && (showInvoice = true)}
+    >View as invoice</button
+  >
   <h1>Bloatamax calendar ™</h1>
   <input type="number" min="1" bind:value={pastMonth} />
   <button on:click={() => fetchMonthly(pastMonth)}>Fetch past months</button>
