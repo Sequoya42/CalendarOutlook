@@ -1,40 +1,40 @@
 <script lang="ts">
-  import { signIn } from "$lib/auth.js";
-  import TimeSheet from "$components/time-sheet.svelte";
-  import { msalAccount, calcMoula, byDays, fetchMonthly } from "$lib/store";
-  import { get } from "svelte/store";
+  import {signIn} from '$lib/auth.js';
+  import TimeSheet from '$components/time-sheet.svelte';
+  import CalendarOptions from '$components/calendar-options.svelte';
+  import {msalAccount, calcMoula, fetchMonthly} from '$store';
+  import Invoice from '$components/invoice.svelte';
 
-  let test = login();
-  let pastMonth = 1;
-  let hideRest = false;
-  let showInvoice = false;
-
+  let monthlyData: any = fetchMonthly(0);
+  let hideRest: boolean = false;
+  let showInvoice: boolean = false;
+  // TODO
+  /* 
+the await block makes no sense.
+Needs to fetch data if logged in, 
+need to login if not logged in.
+Different things.
+Use a load function instead of await block ?
+or keep the await block but sub components, not logged or logged
+instead of this catch block
+ */
   async function login() {
-    $msalAccount = await sessionStorage.getItem("msalAccount");
-    console.log("Login called", get(msalAccount));
-    if (get(msalAccount)) {
-      console.log("GOT ACCOUNT", get(msalAccount));
+    $msalAccount = await sessionStorage.getItem('msalAccount');
+    if ($msalAccount) {
+      console.log('GOT ACCOUNT', $msalAccount);
     } else {
       await signIn();
     }
-    return await fetchMonthly(0);
   }
 </script>
 
-<div style="display:{hideRest ? 'none' : ''}">
-  <button on:click="{() => (hideRest = true)}">View as timeSheet</button>
-  <button on:click="{() => (hideRest = true) && (showInvoice = true)}"
-    >View as invoice</button
-  >
-  <h1>Bloatamax calendar ™</h1>
-  <input type="number" min="1" bind:value="{pastMonth}" />
-  <button on:click="{() => fetchMonthly(pastMonth)}">Fetch past months</button>
-</div>
-
+<CalendarOptions
+  {hideRest}
+  {showInvoice} />
 <div style="margin-left: 15vw">
-  {#await test}
+  {#await monthlyData}
     Fetching data...
-  {:then test}
+  {:then monthlyData}
     {#if !hideRest}
       <div style="container; font-size: x-large; margin-bottom: 2vh">
         Brut: <span>{$calcMoula.moula} Є</span>
@@ -44,10 +44,17 @@
         Net: <span>{$calcMoula.afterTax} Є</span>
       </div>
     {/if}
-    <TimeSheet />
+    {#if !showInvoice}
+      <TimeSheet />
+    {:else}
+      <Invoice />
+    {/if}
   {:catch _someError}
-    <button id="signin" on:click="{() => (test = login())}">
+    <button
+      id="signin"
+      on:click={() => (monthlyData = login())}>
       Login MicroBloat
+      {_someError}
     </button>
   {/await}
 </div>

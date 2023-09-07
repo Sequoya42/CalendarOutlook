@@ -1,15 +1,9 @@
 <script lang="ts">
   import type {Subject} from '$lib/types';
-  import {byDays} from '$lib/store';
+  import {byDays, msalName} from '$store';
+  import {currentMonth, totalTime, totalDays} from '$store/stats';
 
-  let msalName = sessionStorage.getItem('msalName');
-  $: currentMonth = new Date(Object.keys($byDays)[0]).toLocaleString(
-    'default',
-    {month: 'long'}
-  );
   console.log('in time sheet', $byDays);
-  $: totalTime = Object.values($byDays).reduce((a, d) => (a += d.timeSpent), 0);
-  $: totalDays = (totalTime / 8).toFixed(2);
   function transform(sub: any) {
     return sub
       .map((e: Subject) => {
@@ -22,7 +16,7 @@
 
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
-  <h2>Timesheet of {msalName} for the month of {currentMonth}</h2>
+  <h2>Timesheet of {msalName} for the month of {$currentMonth}</h2>
   <span>Meetings are between []</span>
   <div class="gridCal">
     <div class="header">Day</div>

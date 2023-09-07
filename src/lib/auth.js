@@ -1,7 +1,7 @@
 // @ts-nocheck
 //MSAL configuration
 import * as msal from "@azure/msal-browser";
-import {msalAccount} from './store';
+import {msalAccount} from '$store';
 const msalConfig = {
   auth: {
     clientId: 'a39479b4-1119-44d3-900b-44162c8624ea',
@@ -24,7 +24,6 @@ await msalClient.initialize();
 // Log the user in
 export async function signIn() {
   const authResult = await msalClient.loginPopup(msalRequest);
-  console.log({authResult})
   sessionStorage.setItem('msalAccount',authResult.account.username);
   sessionStorage.setItem('msalName',authResult.account.name);
   msalAccount.set(authResult.account.username);

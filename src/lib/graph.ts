@@ -21,7 +21,6 @@ export async function getUser() {
 
 export async function getEvents(num: number) {
   ensureScope('Calendars.read');
-  console.log({ num })
   const today = new Date();
   const currentMonth = today.getMonth() - num;
   const firstDayOfMonth = new Date(today.getFullYear(), currentMonth, 1);
@@ -31,7 +30,7 @@ export async function getEvents(num: number) {
   const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 1);
   console.log({ firstDayOfMonth, lastDayOfMonth, daysInMonth });
   const query = `startDateTime=${firstDayOfMonth.toISOString()}&endDateTime=${lastDayOfMonth.toISOString()}`;
-
+  console.log({ graphClient })
   return await graphClient
     .api('/me/calendarView').query(query)
     .select('subject,start,end, attendees')
@@ -39,6 +38,8 @@ export async function getEvents(num: number) {
     .top(100)
     .get();
 }
+
+//TODO rewrite the below, instead of addGroup, could be a reduce
 
 function addGroup(byDay: any, day: string,
   subject: string, timeSpent: number, isMeeting: boolean) {
@@ -55,10 +56,11 @@ function addGroup(byDay: any, day: string,
   return byDay;
 }
 
-export function aggregateEvents(values: object[], allTimeSpent: number, msalAccount: any) {
-  console.log({ values });
+export function aggregateEvents(values: object[],
+  allTimeSpent: number, msalAccount: any) {
+
   let byDay = {};
-  let data = values.map((event: any) => {
+  values.forEach((event: any) => {
     let start = new Date(event.start.dateTime);
     let end = new Date(event.end.dateTime);
     let day = start.toISOString().split("T")[0];
@@ -72,13 +74,10 @@ export function aggregateEvents(values: object[], allTimeSpent: number, msalAcco
     }
     let timeSpent = (+end - +start) / 3600000;
     allTimeSpent += timeSpent;
-    let text = `${event.subject
-      } - From  ${start.toLocaleString()} to ${end.toLocaleString()}
-      For a total of ${timeSpent} hours`;
     if (!isMeeting || (isMeeting && attended))
       addGroup(byDay, day, event.subject, timeSpent, isMeeting);
-    return text;
+    return event;
   });
-  return { data, allTimeSpent, byDay };
+  return { allTimeSpent, byDay };
 }
 
