@@ -16,7 +16,7 @@
 
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
-  <h2>Timesheet of {msalName} for the month of {$currentMonth}</h2>
+  <h2>Timesheet of {$msalName} for the month of {$currentMonth}</h2>
   <span>Meetings are between []</span>
   <div class="gridCal">
     <div class="header">Day</div>
