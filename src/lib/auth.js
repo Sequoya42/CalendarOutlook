@@ -1,7 +1,7 @@
 // @ts-nocheck
 //MSAL configuration
 import * as msal from "@azure/msal-browser";
-
+import {msalAccount} from './store';
 const msalConfig = {
   auth: {
     clientId: 'a39479b4-1119-44d3-900b-44162c8624ea',
@@ -10,10 +10,10 @@ const msalConfig = {
     redirectUri: 'http://localhost:8080'
   }
 };
-const msalRequest = { scopes: [] };
+const msalRequest = {scopes: []};
 
 export function ensureScope(scope) {
-  if (!msalRequest.scopes.some((s) => s.toLowerCase() === scope.toLowerCase())) {
+  if(!msalRequest.scopes.some((s) => s.toLowerCase() === scope.toLowerCase())) {
     msalRequest.scopes.push(scope);
   }
 }
@@ -24,14 +24,15 @@ await msalClient.initialize();
 // Log the user in
 export async function signIn() {
   const authResult = await msalClient.loginPopup(msalRequest);
-  console.log({ authResult })
-  sessionStorage.setItem('msalAccount', authResult.account.username);
-  sessionStorage.setItem('msalName', authResult.account.name);
+  console.log({authResult})
+  sessionStorage.setItem('msalAccount',authResult.account.username);
+  sessionStorage.setItem('msalName',authResult.account.name);
+  msalAccount.set(authResult.account.username);
 }
 //Get token from Graph
 export async function getToken() {
   let account = sessionStorage.getItem('msalAccount');
-  if (!account) {
+  if(!account) {
     throw new Error(
       'User info cleared from session. Please sign out and sign in again.');
   }
@@ -44,10 +45,10 @@ export async function getToken() {
 
     const silentResult = await msalClient.acquireTokenSilent(silentRequest);
     return silentResult.accessToken;
-  } catch (silentError) {
+  } catch(silentError) {
     // If silent requests fails with InteractionRequiredAuthError,
     // attempt to get the token interactively
-    if (silentError instanceof msal.InteractionRequiredAuthError) {
+    if(silentError instanceof msal.InteractionRequiredAuthError) {
       const interactiveResult = await msalClient.acquireTokenPopup(msalRequest);
       return interactiveResult.accessToken;
     } else {

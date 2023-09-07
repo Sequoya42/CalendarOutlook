@@ -40,13 +40,8 @@ export async function getEvents(num: number) {
     .get();
 }
 
-function addGroup(
-  byDay: any,
-  day: string,
-  subject: string,
-  timeSpent: number,
-  isMeeting: boolean
-) {
+function addGroup(byDay: any, day: string,
+  subject: string, timeSpent: number, isMeeting: boolean) {
   if (byDay[day]) {
     byDay[day].subject.push({ subject, isMeeting });
     byDay[day].timeSpent += +timeSpent;
@@ -60,7 +55,6 @@ function addGroup(
   return byDay;
 }
 
-//TODO agregate by days (forEach, and object with [Day])
 export function aggregateEvents(values: object[], allTimeSpent: number, msalAccount: any) {
   console.log({ values });
   let byDay = {};
@@ -88,32 +82,3 @@ export function aggregateEvents(values: object[], allTimeSpent: number, msalAcco
   return { data, allTimeSpent, byDay };
 }
 
-
-// async function getAllCalendars() {
-//   ensureScope('Calendars.read');
-//   const allCalendars = await graphClient
-//     .api('/me/calendars')
-//     .get();
-//   console.log({ allCalendars })
-//   return allCalendars;
-// }
-
-// async function getKiwiCalendar() {
-//   ensureScope('Calendars.read');
-//   const today = new Date();
-//   const currentMonth = today.getMonth();
-//   const firstDayOfMonth = new Date(today.getFullYear(), currentMonth, 1);
-
-//   // Get the number of days in the current month
-//   const daysInMonth = new Date(today.getFullYear(), currentMonth, 0).getDate();
-//   const lastDayOfMonth = new Date(today.getFullYear(), currentMonth, daysInMonth);
-//   console.log({ firstDayOfMonth, lastDayOfMonth, daysInMonth });
-//   const query = `startDateTime=${firstDayOfMonth.toISOString()}&endDateTime=${lastDayOfMonth.toISOString()}`;
-
-//   return await graphClient
-//     .api('/users/rdantzer@educam.be/calendarView').query(query)
-//     .select('start,end')
-//     .orderby(`start/DateTime`)
-//     .top(100)
-//     .get();
-// }

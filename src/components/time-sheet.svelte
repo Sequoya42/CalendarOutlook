@@ -1,25 +1,14 @@
 <script lang="ts">
-  type Subject = {
-    subject: string;
-    isMeeting: boolean;
-  };
-  type ByDay = {
-    timeSpent: number;
-    subject: Subject[];
-    isMeeting: boolean;
-  };
-  type ByDays = Record<string, ByDay>;
-  export let byDays: ByDays;
+  import type {Subject} from '$lib/types';
+  import {byDays} from '$lib/store';
 
-  let msalName = sessionStorage.getItem("msalName");
-  let currentMonth: string;
-  let totalTime: number;
-  let totalDays: string;
-  $: currentMonth = new Date(Object.keys(byDays)[0]).toLocaleString("default", {
-    month: "long",
-  });
-  console.log("in time sheet", byDays);
-  $: totalTime = Object.values(byDays).reduce((a, d) => (a += d.timeSpent), 0);
+  let msalName = sessionStorage.getItem('msalName');
+  $: currentMonth = new Date(Object.keys($byDays)[0]).toLocaleString(
+    'default',
+    {month: 'long'}
+  );
+  console.log('in time sheet', $byDays);
+  $: totalTime = Object.values($byDays).reduce((a, d) => (a += d.timeSpent), 0);
   $: totalDays = (totalTime / 8).toFixed(2);
   function transform(sub: any) {
     return sub
@@ -27,7 +16,7 @@
         if (e.isMeeting) return `[${e.subject}]`;
         return e.subject;
       })
-      .join(" and ");
+      .join(' and ');
   }
 </script>
 
@@ -41,22 +30,25 @@
     <div class="header">Activity</div>
   </div>
   <div class="gridCal">
-    {#each Object.entries(byDays) as [day, { timeSpent, subject }], i}
+    {#each Object.entries($byDays) as [day, { timeSpent, subject }], i}
       <div
         class:uneven={i % 2}
-        style="flex; justify-content: center; align-items: center;"
-      >
+        style="flex; justify-content: center; align-items: center;">
         <b>{day}</b>
       </div>
       <div class:uneven={i % 2}>
         {timeSpent}h
       </div>
-      <div contentEditable="true" class:uneven={i % 2}>
+      <div
+        contentEditable="true"
+        class:uneven={i % 2}>
         {transform(subject)}
       </div>
     {/each}
   </div>
-  <div class="gridCal" style="margin: 5vh 0">
+  <div
+    class="gridCal"
+    style="margin: 5vh 0">
     <div />
     <div>Totals: {totalTime}h</div>
     <div style="text-align: end">Total: {totalDays} days invoiced</div>
