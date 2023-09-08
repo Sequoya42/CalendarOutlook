@@ -39,43 +39,43 @@ export async function getEvents(num: number) {
     .get();
 }
 
-//TODO rewrite the below, instead of addGroup, could be a reduce
 
-function addGroup(byDay: any, day: string,
+function groupByDays(byDay: any, day: string,
   subject: string, timeSpent: number, isMeeting: boolean) {
-  if (byDay[day]) {
-    byDay[day].subject.push({ subject, isMeeting });
-    byDay[day].timeSpent += +timeSpent;
-  } else {
-    byDay[day] = {
-      subject: [{ subject, isMeeting }],
-      timeSpent,
-    };
-  }
+  byDay[day] ||= { subject: [], timeSpent: 0 };
+
+  byDay[day].subject.push({ subject, isMeeting });
+  byDay[day].timeSpent += timeSpent;
   byDay[day]["isMeeting"] = isMeeting;
   return byDay;
 }
 
+function attendance(event: any, msalAccount: string) {
+  let isMeeting = event.attendees?.length > 0;
+  let attended = true;
+  // NOTE true by default, as if not a meeting, attended
+  if (isMeeting) {
+    let presence = event.attendees.find(
+      (a: any) => a.emailAddress.address == msalAccount
+    ).status.response;
+    if (presence !== "accepted") attended = false;
+  }
+  return attended;
+}
+
 export function aggregateEvents(values: object[],
   allTimeSpent: number, msalAccount: any) {
-
   let byDay = {};
   values.forEach((event: any) => {
     let start = new Date(event.start.dateTime);
     let end = new Date(event.end.dateTime);
     let day = start.toISOString().split("T")[0];
     let isMeeting = event.attendees.length > 0;
-    let attended = true;
-    if (isMeeting) {
-      let presence = event.attendees.find(
-        (a: any) => a.emailAddress.address == msalAccount
-      ).status.response;
-      if (presence !== "accepted") attended = false;
-    }
+    let attended = attendance(event, msalAccount);
     let timeSpent = (+end - +start) / 3600000;
     allTimeSpent += timeSpent;
-    if (!isMeeting || (isMeeting && attended))
-      addGroup(byDay, day, event.subject, timeSpent, isMeeting);
+    if (attended)
+      groupByDays(byDay, day, event.subject, timeSpent, isMeeting);
     return event;
   });
   return { allTimeSpent, byDay };

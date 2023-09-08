@@ -3,13 +3,12 @@
   import {byDays, msalName} from '$store';
   import {currentMonth, totalTime, totalDays} from '$store/stats';
 
-  console.log('in time sheet', $byDays);
   function transform(sub: any) {
     return sub
       .map((e: Subject) => {
-        if (e.isMeeting) return `[${e.subject}]`;
-        return e.subject;
+        return e.isMeeting ? e.subject : `[${e.subject}]`;
       })
+      .filter((e: string) => e.toLowerCase() !== 'extension')
       .join(' and ');
   }
 </script>
@@ -17,39 +16,30 @@
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
   <h2>Timesheet of {$msalName} for the month of {$currentMonth}</h2>
-  <span>Meetings are between []</span>
+  <small>Meetings are between []</small>
   <div class="gridCal">
     <div class="header">Day</div>
     <div class="header">Time</div>
     <div class="header">Activity</div>
-  </div>
-  <div class="gridCal">
+
     {#each Object.entries($byDays) as [day, { timeSpent, subject }], i}
-      <div
-        class:uneven={i % 2}
-        style="flex; justify-content: center; align-items: center;">
+      <div class:uneven={i % 2} style="">
         <b>{day}</b>
       </div>
       <div class:uneven={i % 2}>
         {timeSpent}h
       </div>
-      <div
-        contentEditable="true"
-        class:uneven={i % 2}>
+      <div contentEditable="true" class:uneven={i % 2}>
         {transform(subject)}
       </div>
     {/each}
+
+    <div class="my-5" />
+    <div>Totals: {$totalTime}h</div>
+    <div style="text-align: end">Total: {$totalDays} days invoiced</div>
   </div>
-  <div
-    class="gridCal"
-    style="margin: 5vh 0">
-    <div />
-    <div>Totals: {totalTime}h</div>
-    <div style="text-align: end">Total: {totalDays} days invoiced</div>
-  </div>
-  <div>
-    <span style="font-size: larger"> Approved by : </span>
-  </div>
+
+  <span style="font-size: larger"> Approved by : </span>
   <div style="margin-top: 5px;">On :</div>
 </main>
 
@@ -63,12 +53,16 @@
     margin-top: 1vh;
     display: grid;
     grid-template-columns: 1fr 1fr 5fr;
-    grid-template-rows: 1fr;
     grid-row-gap: 2vh;
   }
-  .gridCal > div {
-    /* border-left: 1px solid red; */
-    padding: 0 5px;
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .my-5 {
+    margin: 5vh 0;
   }
 
   .uneven {

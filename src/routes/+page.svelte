@@ -7,12 +7,10 @@
 
   let monthlyData: any = fetchMonthly(0);
   let hideRest: boolean = false;
-  let showInvoice: boolean = false;
-  // TODO
-  /* 
+  let showInvoice: boolean = true;
+  /* TODO
 the await block makes no sense.
-Needs to fetch data if logged in, 
-need to login if not logged in.
+Needs to fetch data if logged in, need to login if not logged in.
 Different things.
 Use a load function instead of await block ?
 or keep the await block but sub components, not logged or logged
@@ -28,9 +26,7 @@ instead of this catch block
   }
 </script>
 
-<CalendarOptions
-  {hideRest}
-  {showInvoice} />
+<CalendarOptions bind:showInvoice bind:hideRest />
 <div style="margin-left: 15vw">
   {#await monthlyData}
     Fetching data...
@@ -50,9 +46,7 @@ instead of this catch block
       <Invoice />
     {/if}
   {:catch _someError}
-    <button
-      id="signin"
-      on:click={() => (monthlyData = login())}>
+    <button id="signin" on:click={() => (monthlyData = login())}>
       Login MicroBloat
       {_someError}
     </button>
