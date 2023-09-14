@@ -1,7 +1,7 @@
 import { get, writable, type Writable } from "svelte/store";
 import { aggregateEvents, getEvents } from "$lib/graph.js";
 import type { ByDays, CalcMoula } from "$lib/types";
-import { msalAccount } from "$store";
+import { currentMonth, msalAccount } from "$store";
 
 let calcMoula: Writable<CalcMoula> = writable({
   allTimeSpent: 0,
@@ -23,6 +23,12 @@ async function fetchMonthly(num = 0): Promise<ByDays> {
   let tax = (moula * 20) / 100;
   let afterTax = moula - tax;
   calcMoula.set({ allTimeSpent, moula, tax, afterTax });
+  //TODO when num != 0, check with a currentMonth if in localStorage
+  // Have a thing to aggregate all of that, a mega json past data
+  // Don't need all, just pay/tax
+  if (num !== 0) {
+    localStorage.set(get(currentMonth), JSON.stringify({ byDay, calcMoula }))
+  }
   console.log({ calcMoula });
   return get(byDays);
 }

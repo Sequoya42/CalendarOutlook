@@ -7,7 +7,7 @@
 
   let monthlyData: any = fetchMonthly(0);
   let hideRest: boolean = false;
-  let showInvoice: boolean = true;
+  let showInvoice: boolean = false;
   /* TODO
 the await block makes no sense.
 Needs to fetch data if logged in, need to login if not logged in.
@@ -17,7 +17,7 @@ or keep the await block but sub components, not logged or logged
 instead of this catch block
  */
   async function login() {
-    $msalAccount = await sessionStorage.getItem('msalAccount');
+    $msalAccount = await localStorage.getItem('msalAccount');
     if ($msalAccount) {
       console.log('GOT ACCOUNT', $msalAccount);
     } else {

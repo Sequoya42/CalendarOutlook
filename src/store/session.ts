@@ -8,8 +8,8 @@ const msalName: Writable<string | null>
   = writable(null);
 
 if (browser) {
-  let msal: string | null = sessionStorage.getItem("msalAccount");
-  let name: string | null = sessionStorage.getItem('msalName');
+  let msal: string | null = localStorage.getItem("msalAccount");
+  let name: string | null = localStorage.getItem('msalName');
   msalAccount.set(msal);
   msalName.set(name);
 }

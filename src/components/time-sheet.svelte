@@ -6,9 +6,11 @@
   function transform(sub: any) {
     return sub
       .map((e: Subject) => {
-        return e.isMeeting ? e.subject : `[${e.subject}]`;
+        return !e.isMeeting ? e.subject : `[${e.subject}]`;
       })
-      .filter((e: string) => e.toLowerCase() !== 'extension')
+      .filter(
+        (e: string) => !['extension', 'overtime'].includes(e.toLowerCase())
+      )
       .join(' and ');
   }
 </script>

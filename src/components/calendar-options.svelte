@@ -8,7 +8,9 @@
 
 <div style="display:{hideRest ? 'none' : ''}">
   <button on:click={() => (hideRest = true)}>Printable version</button>
-  <button on:click={() => (showInvoice = !showInvoice)}>View as invoice</button>
+  <button on:click={() => (showInvoice = !showInvoice)}
+    >View as {!showInvoice ? 'invoice' : 'timesheet'}
+  </button>
   <input type="number" min="1" bind:value={pastMonth} />
   <button on:click={() => fetchMonthly(pastMonth)}>Fetch past months</button>
   <h1>Bloatamax calendar ™</h1>
