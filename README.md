@@ -5,6 +5,12 @@ just lance `npm run stuff`
 
 -- 
 
+Can create an event named "overtime" or "extension" to add to the hours but don't add to the description.
+
+Can create an event called "minus" to remove time from the timesheet (won't appear in description).
+Useful if a meeting of 3h and only attended the first hour.
+Create a 2h event called "minus"
+
 ## TODO
 
 - Save in sessionStorage the tax % for ppl
