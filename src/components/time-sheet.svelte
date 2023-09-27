@@ -10,7 +10,7 @@
       })
       .filter(
         (e: string) =>
-          !['extension', 'overtime', 'minus'].includes(e.toLowerCase())
+          !['extension', 'overtime', 'minus'].includes(e.trim().toLowerCase())
       )
       .join(' and ');
   }
