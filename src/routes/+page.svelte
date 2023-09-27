@@ -4,10 +4,13 @@
   import CalendarOptions from '$components/calendar-options.svelte';
   import {msalAccount, calcMoula, fetchMonthly} from '$store';
   import Invoice from '$components/invoice.svelte';
-
   let monthlyData: any = fetchMonthly(0);
   let hideRest: boolean = false;
   let showInvoice: boolean = false;
+
+  export const csr = true;
+  export const ssr = false;
+
   /* TODO
 the await block makes no sense.
 Needs to fetch data if logged in, need to login if not logged in.
@@ -17,7 +20,7 @@ or keep the await block but sub components, not logged or logged
 instead of this catch block
  */
   async function login() {
-    $msalAccount = await localStorage.getItem('msalAccount');
+    $msalAccount = await sessionStorage.getItem('msalAccount');
     if ($msalAccount) {
       console.log('GOT ACCOUNT', $msalAccount);
     } else {

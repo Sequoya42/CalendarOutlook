@@ -47,6 +47,7 @@ export async function getToken() {
   } catch(silentError) {
     // If silent requests fails with InteractionRequiredAuthError,
     // attempt to get the token interactively
+    console.log({silentError})
     if(silentError instanceof msal.InteractionRequiredAuthError) {
       const interactiveResult = await msalClient.acquireTokenPopup(msalRequest);
       return interactiveResult.accessToken;

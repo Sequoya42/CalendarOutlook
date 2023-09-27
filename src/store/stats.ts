@@ -9,7 +9,11 @@ let currentMonth = derived(byDays, days =>
   ))
 
 let totalTime = derived(byDays, $byDays =>
-  Object.values($byDays).reduce((a, d) => (a += d.timeSpent), 0));
+  Object.values($byDays).reduce((a, d) => {
+    (a += d.timeSpent)
+    console.log({ d })
+    return a;
+  }, 0));
 
 let totalDays = derived(totalTime, totalTime =>
   (totalTime / 8).toFixed(2));

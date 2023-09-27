@@ -9,7 +9,8 @@
         return !e.isMeeting ? e.subject : `[${e.subject}]`;
       })
       .filter(
-        (e: string) => !['extension', 'overtime'].includes(e.toLowerCase())
+        (e: string) =>
+          !['extension', 'overtime', 'minus'].includes(e.toLowerCase())
       )
       .join(' and ');
   }

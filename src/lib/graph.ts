@@ -33,7 +33,7 @@ export async function getEvents(num: number) {
   console.log({ graphClient })
   return await graphClient
     .api('/me/calendarView').query(query)
-    .select('subject,start,end, attendees')
+    .select('subject,start,end, attendees, organizer, responseStatus')
     .orderby(`start/DateTime`)
     .top(100)
     .get();
@@ -53,6 +53,11 @@ function groupByDays(byDay: any, day: string,
 function attendance(event: any, msalAccount: string) {
   let isMeeting = event.attendees?.length > 0;
   let attended = true;
+  let organizer = event.organizer.emailAddress.address;
+  console.log({ organizer, msalAccount })
+  if (organizer === msalAccount)
+    return attended;
+
   // NOTE true by default, as if not a meeting, attended
   if (isMeeting) {
     let presence = event.attendees.find(
@@ -73,11 +78,15 @@ export function aggregateEvents(values: object[],
     let isMeeting = event.attendees.length > 0;
     let attended = attendance(event, msalAccount);
     let timeSpent = (+end - +start) / 3600000;
+    if (event.subject.trim().toLowerCase() == 'minus') {
+      timeSpent *= -1;
+    }
     allTimeSpent += timeSpent;
     if (attended)
       groupByDays(byDay, day, event.subject, timeSpent, isMeeting);
     return event;
   });
+
   return { allTimeSpent, byDay };
 }
 

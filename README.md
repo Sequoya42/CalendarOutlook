@@ -7,7 +7,7 @@ just lance `npm run stuff`
 
 ## TODO
 
-- Save in localStorage the tax % for ppl
-- Let them edit a few stuff and save preferences (localStorage as well)
+- Save in sessionStorage the tax % for ppl
+- Let them edit a few stuff and save preferences (sessionStorage as well)
 - Upload to github page t showcase, make opensource.
 

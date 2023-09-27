@@ -23,11 +23,11 @@ async function fetchMonthly(num = 0): Promise<ByDays> {
   let tax = (moula * 20) / 100;
   let afterTax = moula - tax;
   calcMoula.set({ allTimeSpent, moula, tax, afterTax });
-  //TODO when num != 0, check with a currentMonth if in localStorage
+  //TODO when num != 0, check with a currentMonth if in sessionStorage
   // Have a thing to aggregate all of that, a mega json past data
   // Don't need all, just pay/tax
   if (num !== 0) {
-    localStorage.set(get(currentMonth), JSON.stringify({ byDay, calcMoula }))
+    sessionStorage.setItem(get(currentMonth), JSON.stringify({ byDay, calcMoula }))
   }
   console.log({ calcMoula });
   return get(byDays);
