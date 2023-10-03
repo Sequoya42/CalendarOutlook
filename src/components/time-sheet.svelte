@@ -4,10 +4,11 @@
   import {currentMonth, totalTime, totalDays} from '$store/stats';
 
   function transform(sub: any) {
+    sub = sub.map((e: Subject) => {
+      return !e.isMeeting ? e.subject : `[${e.subject}]`;
+    });
+    sub = [...new Set(sub)];
     return sub
-      .map((e: Subject) => {
-        return !e.isMeeting ? e.subject : `[${e.subject}]`;
-      })
       .filter(
         (e: string) =>
           !['extension', 'overtime', 'minus'].includes(e.trim().toLowerCase())
