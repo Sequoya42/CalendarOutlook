@@ -60,11 +60,6 @@
     grid-row-gap: 2vh;
   }
 
-  .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
   .my-5 {
     margin: 5vh 0;
   }

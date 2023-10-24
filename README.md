@@ -14,7 +14,7 @@ Create a 2h event called "minus"
 
 ## TODO
 
-- Save in sessionStorage the tax % for ppl
-- Let them edit a few stuff and save preferences (sessionStorage as well)
+- Save in localStorage the tax % for ppl
+- Let them edit a few stuff and save preferences (localStorage as well)
 - Upload to github page t showcase, make opensource.
 

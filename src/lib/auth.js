@@ -8,6 +8,9 @@ const msalConfig = {
     // comment out if you use a multi-tenant AAD app
     authority: 'https://login.microsoftonline.com/2bb672ce-7d3c-4374-b4b5-672693ef6c08',
     redirectUri: 'http://localhost:8080'
+  },
+  cache: {
+    cacheLocation: "localStorage"
   }
 };
 const msalRequest = {scopes: []};
@@ -24,13 +27,17 @@ await msalClient.initialize();
 // Log the user in
 export async function signIn() {
   const authResult = await msalClient.loginPopup(msalRequest);
+  // console.log({authResult});
   localStorage.setItem('msalAccount',authResult.account.username);
   localStorage.setItem('msalName',authResult.account.name);
   msalAccount.set(authResult.account.username);
 }
+
 //Get token from Graph
 export async function getToken() {
-  let account = localStorage.getItem('msalAccount');
+  let account;
+  account = localStorage.getItem('msalAccount');
+
   if(!account) {
     throw new Error(
       'User info cleared from session. Please sign out and sign in again.');
@@ -47,7 +54,7 @@ export async function getToken() {
   } catch(silentError) {
     // If silent requests fails with InteractionRequiredAuthError,
     // attempt to get the token interactively
-    console.log({silentError})
+    // console.log({silentError})
     if(silentError instanceof msal.InteractionRequiredAuthError) {
       const interactiveResult = await msalClient.acquireTokenPopup(msalRequest);
       return interactiveResult.accessToken;

@@ -28,9 +28,9 @@ export async function getEvents(num: number) {
   // Get the number of days in the current month
   const daysInMonth = new Date(today.getFullYear(), currentMonth, 0).getDate();
   const lastDayOfMonth = new Date(today.getFullYear(), currentMonth + 1, 1);
-  console.log({ firstDayOfMonth, lastDayOfMonth, daysInMonth });
+  // console.log({ firstDayOfMonth, lastDayOfMonth, daysInMonth });
   const query = `startDateTime=${firstDayOfMonth.toISOString()}&endDateTime=${lastDayOfMonth.toISOString()}`;
-  console.log({ graphClient })
+  // console.log({ graphClient })
   return await graphClient
     .api('/me/calendarView').query(query)
     .select('subject,start,end, attendees, organizer, responseStatus')
@@ -54,7 +54,7 @@ function attendance(event: any, msalAccount: string) {
   let isMeeting = event.attendees?.length > 0;
   let attended = true;
   let organizer = event.organizer.emailAddress.address;
-  console.log({ organizer, msalAccount })
+  // console.log({ organizer, msalAccount, isMeeting, event })
   if (organizer === msalAccount)
     return attended;
 

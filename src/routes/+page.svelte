@@ -8,8 +8,8 @@
   let hideRest: boolean = false;
   let showInvoice: boolean = false;
 
-  export const csr = true;
-  export const ssr = false;
+  // export const csr = true;
+  // export const ssr = false;
 
   /* TODO
 the await block makes no sense.
@@ -20,11 +20,14 @@ or keep the await block but sub components, not logged or logged
 instead of this catch block
  */
   async function login() {
-    $msalAccount = await sessionStorage.getItem('msalAccount');
+    $msalAccount = await localStorage.getItem('msalAccount');
     if ($msalAccount) {
-      console.log('GOT ACCOUNT', $msalAccount);
+      // console.log('GOT ACCOUNT', $msalAccount);
+      monthlyData = fetchMonthly(0);
     } else {
       await signIn();
+      monthlyData = fetchMonthly(0);
+      // console.log('pass elses');
     }
   }
 </script>
