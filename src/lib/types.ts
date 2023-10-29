@@ -15,4 +15,12 @@ export type CalcMoula = {
   afterTax: number;
 }
 
+type Owner = {
+  address: string,
+  name: string
+}
+export type SelectedCal = {
+  id: string;
+  owner: Owner
+}
 export type ByDays = Record<string, ByDay>;

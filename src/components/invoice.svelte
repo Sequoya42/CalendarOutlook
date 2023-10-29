@@ -1,8 +1,6 @@
 <script lang="ts">
   import {calcMoula, totalDays, msalName} from '$store';
   import C from '$lib/constantInvoice.json';
-  // TODO put some of this stuff in localStorage, ability to save as a client?
-  // automatically keep track of invoice?
   let today = new Date().toLocaleString('default', {
     day: 'numeric',
     month: 'long',

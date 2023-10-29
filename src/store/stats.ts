@@ -16,7 +16,7 @@ let totalTime = derived(byDays, $byDays =>
   }, 0));
 
 let totalDays = derived(totalTime, totalTime =>
-  (totalTime / 8).toFixed(2));
+  (totalTime / 8).toFixed(1));
 
 
 

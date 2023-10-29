@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {Subject} from '$lib/types';
-  import {byDays, msalName} from '$store';
+  import {byDays, msalName, selectedCal} from '$store';
   import {currentMonth, totalTime, totalDays} from '$store/stats';
 
   function transform(sub: any) {
@@ -19,7 +19,9 @@
 
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
-  <h2>Timesheet of {$msalName} for the month of {$currentMonth}</h2>
+  <h2>
+    Timesheet of {$selectedCal.owner.name} for the month of {$currentMonth}
+  </h2>
   <small>Meetings are between []</small>
   <div class="gridCal">
     <div class="header">Day</div>
