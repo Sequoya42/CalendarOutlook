@@ -38,8 +38,8 @@ instead of this catch block
   {#await monthlyData}
     Fetching data...
   {:then}
-    <SelectionMenu />
     {#if !hideRest}
+      <SelectionMenu />
       <div style="container; font-size: x-large; margin-bottom: 2vh">
         Brut: <span>{$calcMoula.moula} Є</span>
         Total time :
