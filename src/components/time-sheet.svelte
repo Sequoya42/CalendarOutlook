@@ -1,6 +1,6 @@
 <script lang="ts">
   import type {Subject} from '$lib/types';
-  import {byDays, msalName, selectedCal} from '$store';
+  import {byDays, filterByCat, selectedCal} from '$store';
   import {currentMonth, totalTime, totalDays} from '$store/stats';
 
   function transform(sub: any) {
@@ -15,12 +15,21 @@
       )
       .join(' and ');
   }
+
+  $: displayCat = () => {
+    let cat = $filterByCat;
+    if (cat && cat !== 'none' && cat !== 'all') {
+      return `( ${cat} )`;
+    }
+    return '';
+  };
 </script>
 
 <!-- /*------------- Html -----------*/ -->
 <main class="timeSheet">
   <h2>
     Timesheet of {$selectedCal.owner.name} for the month of {$currentMonth}
+    {displayCat()}
   </h2>
   <small>Meetings are between []</small>
   <div class="gridCal">
@@ -29,7 +38,7 @@
     <div class="header">Activity</div>
 
     {#each Object.entries($byDays) as [day, { timeSpent, subject }], i}
-      <div class:uneven={i % 2} style="">
+      <div class:uneven={i % 2}>
         <b>{day}</b>
       </div>
       <div class:uneven={i % 2}>

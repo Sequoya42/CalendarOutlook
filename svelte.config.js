@@ -15,6 +15,7 @@ const config = {
     alias: {
       // This will match the `components` folder and its contents.
       '$components': path.resolve('./src/components'),
+      '$dtos': path.resolve('./src/dtos'),
       '$store': path.resolve('./src/store')
     },
     adapter: adapter()
