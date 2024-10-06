@@ -5,6 +5,7 @@
   let pastMonth = 1;
   export let hideRest: boolean;
   export let showInvoice: boolean;
+  $: backgroundColor = showInvoice ? '#b2dfb2' : '#b2dff5';
 
   function handleKeyPress(event: KeyboardEvent) {
     if (event.key === 'Escape') {
@@ -39,8 +40,8 @@
     </a>
   </div>
   <div class="controls">
-    <button on:click={() => (hideRest = true)}>Printable version <small>(esc to get out)</small></button>
-    <button on:click={() => (showInvoice = !showInvoice)}>View as {!showInvoice ? 'invoice' : 'timesheet'}</button>
+<!--    <button on:click={() => (hideRest = true)}>Printable version <small>(esc to get out)</small></button>-->
+    <button style="background-color: {backgroundColor}" on:click={() => (showInvoice = !showInvoice)}>View as {!showInvoice ? 'invoice' : 'timesheet'}</button>
     <div class="month-selector">
       <label for="monthInput">Past Month:</label>
       <div class="preset-buttons">

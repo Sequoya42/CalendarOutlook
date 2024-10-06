@@ -14,6 +14,10 @@
           Tax (<input type="number" bind:value={$taxPercentage} min="0" max="100" style="width: 3em;" />%): <span>{$calcMoula.tax} Є</span>
           Net: <span>{$calcMoula.afterTax} Є</span>
         </div>
+        <button style="display:{hideRest ? 'none' : ''}" class="no-print" on:click="{printElement}">print as PDF</button>
+        <p class="print-instructions">
+          Note: Please select "Save as PDF" in the print dialog to save this content as a PDF.
+        </p>
         <div id="pdf-content">
         {#if !showInvoice}
           <TimeSheet />
@@ -21,9 +25,7 @@
           <Invoice />
         {/if}
         </div>
-
       </div>
-      <button on:click={saveAsPDF} {disabled}>Save as PDF</button> <!-- Bind 'disabled' -->
     {/await}
   {:else}
     <button id="signin" on:click={login}>
@@ -110,39 +112,25 @@
     await checkLogin();
   }
 
-  // Function to save the content as a PDF
-  async function saveAsPDF() {
-    if (typeof window === 'undefined') return; // Ensure code runs only in the browser
+  function printElement() {
+    const elementId = 'pdf-content'
+    // Get the original body content
+    const originalContent = document.body.innerHTML;
+    // Get the HTML of the specified element
+    const printContent = document.getElementById(elementId)?.outerHTML;
 
-    const content = document.getElementById('pdf-content');
-
-    if (content) {
-      const year = new Date().getFullYear();
-      const filename = `${$currentMonth}_${year}.pdf`;
-
-      // Disable the button
-      let disabled = true;
-
-      try {
-        const canvas = await html2canvas(content, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true });
-
-        const imgProps = doc.getImageProperties(imgData);
-        const pdfWidth = doc.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        doc.addImage(imgData, 'JPEG', 10, 10, pdfWidth, pdfHeight);
-        doc.setFont('times', 'bold');
-        doc.save(filename);
-      } finally {
-        setTimeout(() => {
-          // Enable the button after 1 second
-          disabled = false;
-        }, 1000);
-      }
+    if (printContent) {
+      // Set the body to the content of the specified element
+      document.body.innerHTML = printContent;
+      // Trigger the print dialog
+      window.print();
+      // Restore the original body content
+      document.body.innerHTML = originalContent;
+      window.location.reload();
     }
   }
+
+
 </script>
 
 <style>
@@ -156,5 +144,19 @@
   button[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
+
   }
+
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+
+    /* Add any print-specific styles here */
+    #pdf-content {
+      /*font-family: 'Arial, sans-serif';*/
+      padding: 10mm;
+    }
+  }
+
 </style>
