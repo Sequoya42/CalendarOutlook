@@ -43,8 +43,6 @@
   import SelectionMenu from '$components/selection-menu.svelte';
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import jsPDF from 'jspdf';
-  import html2canvas from "html2canvas";
 
   const taxPercentage = writable(0); // Default to 20%
   let monthlyData: Promise<any>; // Initialize without fetch
