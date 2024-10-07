@@ -22,7 +22,8 @@ export function ensureScope(scope) {
 }
 //Initialize MSAL client
 const msalClient = new msal.PublicClientApplication(msalConfig);
-await msalClient.initialize();
+(async _ => await msalClient.initialize())()
+
 
 // Log the user in
 export async function signIn() {

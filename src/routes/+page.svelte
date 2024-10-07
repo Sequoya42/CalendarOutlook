@@ -6,6 +6,10 @@
     {:then resolvedData}
       {#if !hideRest}
         <SelectionMenu bind:hideRest />
+        <div class="header-image">
+          <img width="64" height="64" src="akelhurlatun.png" alt="akelhur">
+        </div>
+
       {/if}
       <div style="margin-left: 15vw">
         <div style="display: contents; font-size: x-large; margin-bottom: 2vh">
