@@ -2,12 +2,13 @@
 //MSAL configuration
 import * as msal from "@azure/msal-browser";
 import {msalAccount} from '$store';
+//TODO env
 const msalConfig = {
   auth: {
     clientId: 'a39479b4-1119-44d3-900b-44162c8624ea',
     // comment out if you use a multi-tenant AAD app
     authority: 'https://login.microsoftonline.com/2bb672ce-7d3c-4374-b4b5-672693ef6c08',
-    redirectUri: 'http://localhost:8080'
+    redirectUri: 'https://calendabloat.netlify.app'
   },
   cache: {
     cacheLocation: "localStorage"
